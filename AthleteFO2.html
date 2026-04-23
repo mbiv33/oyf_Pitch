@@ -1,0 +1,3327 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AthleteFO | Interactive Pitch Deck</title>
+    <style>
+      :root {
+        --obsidian: #0b0b0d;
+        --navy: #121a2a;
+        --gold: #b9923f;
+        --cream: #f3e7b3;
+        --bone: #f5f2ea;
+        --graphite: #5f6368;
+        --muted: #c9c3b4;
+        --line: rgba(245, 242, 234, 0.16);
+        --panel: rgba(18, 26, 42, 0.82);
+        --panel-soft: rgba(245, 242, 234, 0.08);
+        --alert: #c94c4c;
+        --gold-soft: rgba(185, 146, 63, 0.12);
+        --gold-strong: rgba(185, 146, 63, 0.28);
+        --shadow: 0 30px 80px rgba(0, 0, 0, 0.36);
+        --radius: 8px;
+        color-scheme: dark;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+        margin: 0;
+        background: var(--obsidian);
+        color: var(--bone);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      body {
+        overflow: hidden;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      .app {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 288px minmax(0, 1fr);
+        background:
+          linear-gradient(90deg, rgba(185, 146, 63, 0.08), transparent 26%),
+          radial-gradient(circle at 80% 12%, rgba(185, 146, 63, 0.13), transparent 30%),
+          linear-gradient(145deg, #0b0b0d 0%, #121a2a 54%, #0b0b0d 100%);
+      }
+
+      .sidebar {
+        border-right: 1px solid var(--line);
+        padding: 22px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        background: rgba(11, 11, 13, 0.82);
+        backdrop-filter: blur(18px);
+      }
+
+      .brand-lockup {
+        display: grid;
+        gap: 8px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .mark {
+        width: 52px;
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(185, 146, 63, 0.7);
+        color: var(--gold);
+        font-weight: 900;
+        font-size: 18px;
+        letter-spacing: 0;
+        background:
+          linear-gradient(135deg, rgba(185, 146, 63, 0.2), transparent),
+          var(--navy);
+      }
+
+      .brand-lockup strong {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--cream);
+      }
+
+      .brand-lockup span {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .slide-list {
+        display: grid;
+        gap: 7px;
+        overflow: auto;
+        padding-right: 3px;
+      }
+
+      .slide-tab {
+        width: 100%;
+        min-height: 46px;
+        border: 1px solid transparent;
+        border-radius: var(--radius);
+        background: transparent;
+        color: var(--muted);
+        text-align: left;
+        padding: 8px 10px;
+        display: grid;
+        grid-template-columns: 28px 1fr;
+        gap: 8px;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .slide-tab:hover,
+      .slide-tab.active {
+        border-color: rgba(185, 146, 63, 0.42);
+        background: rgba(245, 242, 234, 0.06);
+        color: var(--bone);
+      }
+
+      .slide-tab b {
+        color: var(--gold);
+        font-size: 11px;
+      }
+
+      .slide-tab span {
+        font-size: 13px;
+        line-height: 1.25;
+      }
+
+      .deck-controls {
+        margin-top: auto;
+        display: grid;
+        gap: 10px;
+      }
+
+      .control-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .btn {
+        min-height: 40px;
+        border: 1px solid rgba(185, 146, 63, 0.45);
+        background: rgba(185, 146, 63, 0.12);
+        color: var(--cream);
+        border-radius: var(--radius);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 8px 12px;
+      }
+
+      .btn:hover {
+        background: rgba(185, 146, 63, 0.2);
+      }
+
+      .hint {
+        color: var(--graphite);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .stage {
+        min-width: 0;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        height: 100vh;
+      }
+
+      .topbar {
+        min-height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        border-bottom: 1px solid var(--line);
+        padding: 0 28px;
+        background: rgba(11, 11, 13, 0.38);
+      }
+
+      .eyebrow {
+        color: var(--gold);
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        font-weight: 800;
+      }
+
+      .progress {
+        width: min(320px, 36vw);
+        height: 8px;
+        border: 1px solid rgba(245, 242, 234, 0.18);
+        background: rgba(245, 242, 234, 0.05);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .progress span {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--gold), var(--cream));
+        transition: width 180ms ease;
+      }
+
+      .slides {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        padding: clamp(24px, 4vw, 56px);
+        display: none;
+        overflow: auto;
+      }
+
+      .slide.active {
+        display: grid;
+        animation: rise 220ms ease both;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .slide-inner {
+        width: min(1180px, 100%);
+        margin: auto;
+        display: grid;
+        gap: 26px;
+      }
+
+      .two-col {
+        grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+        align-items: center;
+      }
+
+      .three-col {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .four-col {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: clamp(48px, 8vw, 112px);
+        line-height: 0.92;
+        letter-spacing: 0;
+        max-width: 990px;
+      }
+
+      h2 {
+        font-size: clamp(34px, 5vw, 72px);
+        line-height: 0.98;
+        letter-spacing: 0;
+        max-width: 920px;
+      }
+
+      h3 {
+        color: var(--cream);
+        font-size: 18px;
+        line-height: 1.1;
+      }
+
+      .lead {
+        color: var(--muted);
+        font-size: clamp(18px, 2.1vw, 27px);
+        line-height: 1.35;
+        max-width: 860px;
+      }
+
+      .body {
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.58;
+      }
+
+      .accent {
+        color: var(--gold);
+      }
+
+      .tagline {
+        color: var(--cream);
+        font-size: clamp(18px, 2.3vw, 34px);
+        font-weight: 800;
+        line-height: 1.12;
+        max-width: 850px;
+      }
+
+      .panel,
+      .card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel-soft);
+        box-shadow: var(--shadow);
+      }
+
+      .panel {
+        padding: clamp(18px, 2.4vw, 28px);
+      }
+
+      .card {
+        padding: 18px;
+        display: grid;
+        gap: 12px;
+        min-height: 156px;
+      }
+
+      .card p {
+        color: var(--muted);
+        line-height: 1.5;
+        font-size: 14px;
+      }
+
+      .card button {
+        justify-self: start;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .metric {
+        padding: 18px;
+        border-radius: var(--radius);
+        border: 1px solid rgba(185, 146, 63, 0.35);
+        background: rgba(11, 11, 13, 0.36);
+      }
+
+      .metric strong {
+        display: block;
+        color: var(--cream);
+        font-size: clamp(24px, 3.5vw, 48px);
+        line-height: 1;
+      }
+
+      .metric span {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.35;
+        margin-top: 8px;
+      }
+
+      .hero-visual {
+        min-height: 440px;
+        display: grid;
+        place-items: center;
+        position: relative;
+        overflow: hidden;
+        background:
+          linear-gradient(180deg, rgba(243, 231, 179, 0.08), transparent),
+          radial-gradient(circle at 50% 50%, rgba(185, 146, 63, 0.18), transparent 52%),
+          var(--panel);
+      }
+
+      .field {
+        width: min(430px, 78vw);
+        aspect-ratio: 1;
+        border: 1px solid rgba(245, 242, 234, 0.22);
+        position: relative;
+        transform: rotateX(58deg) rotateZ(-38deg);
+        background:
+          linear-gradient(90deg, transparent 49%, rgba(245, 242, 234, 0.18) 49% 51%, transparent 51%),
+          linear-gradient(0deg, transparent 49%, rgba(245, 242, 234, 0.18) 49% 51%, transparent 51%),
+          repeating-linear-gradient(90deg, rgba(245, 242, 234, 0.06) 0 1px, transparent 1px 46px);
+        box-shadow: 0 34px 70px rgba(0, 0, 0, 0.48);
+      }
+
+      .field::before,
+      .field::after {
+        content: "";
+        position: absolute;
+        inset: 14%;
+        border: 1px solid rgba(185, 146, 63, 0.5);
+      }
+
+      .field::after {
+        inset: 33%;
+        border-color: rgba(185, 146, 63, 0.42);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+        border: 1px solid rgba(185, 146, 63, 0.45);
+        border-radius: 999px;
+        color: var(--cream);
+        background: rgba(185, 146, 63, 0.09);
+        padding: 7px 11px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 800;
+      }
+
+      .pipeline {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .step {
+        min-height: 220px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 18px;
+        display: grid;
+        align-content: space-between;
+        gap: 18px;
+        background: rgba(245, 242, 234, 0.06);
+        cursor: pointer;
+      }
+
+      .step:hover,
+      .step.active {
+        border-color: rgba(185, 146, 63, 0.68);
+        background: rgba(185, 146, 63, 0.1);
+      }
+
+      .step b {
+        color: var(--gold);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .step strong {
+        display: block;
+        color: var(--cream);
+        font-size: 22px;
+        line-height: 1.05;
+      }
+
+      .step p {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.48;
+      }
+
+      .architecture {
+        display: grid;
+        gap: 14px;
+      }
+
+      .layer {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr);
+        gap: 16px;
+        align-items: stretch;
+      }
+
+      .layer-name {
+        border-radius: var(--radius);
+        padding: 18px;
+        display: grid;
+        align-content: center;
+        border: 1px solid rgba(185, 146, 63, 0.42);
+        background: rgba(185, 146, 63, 0.1);
+        color: var(--cream);
+        font-weight: 900;
+      }
+
+      .layer-detail {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 18px;
+        color: var(--muted);
+        line-height: 1.5;
+        background: rgba(245, 242, 234, 0.055);
+      }
+
+      .palettes {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 18px;
+      }
+
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .swatch {
+        min-height: 120px;
+        border-radius: var(--radius);
+        border: 1px solid rgba(245, 242, 234, 0.16);
+        padding: 10px;
+        display: flex;
+        align-items: end;
+        color: white;
+        font-size: 11px;
+        line-height: 1.25;
+        text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
+      }
+
+      .toggle-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .toggle {
+        border: 1px solid var(--line);
+        background: rgba(245, 242, 234, 0.06);
+        color: var(--muted);
+        border-radius: 999px;
+        min-height: 36px;
+        padding: 7px 12px;
+        cursor: pointer;
+      }
+
+      .toggle.active {
+        border-color: rgba(185, 146, 63, 0.68);
+        background: rgba(185, 146, 63, 0.13);
+        color: var(--cream);
+      }
+
+      .calc {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+        gap: 18px;
+        align-items: stretch;
+      }
+
+      .slider-row {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+
+      .slider-row label {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        color: var(--cream);
+        font-weight: 800;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--gold);
+      }
+
+      .number-output {
+        color: var(--gold);
+      }
+
+      .revenue-chart {
+        min-height: 320px;
+        display: grid;
+        align-items: end;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        padding: 18px;
+      }
+
+      .bar {
+        display: grid;
+        align-content: end;
+        gap: 10px;
+        min-height: 270px;
+      }
+
+      .bar-fill {
+        min-height: 12px;
+        border-radius: var(--radius) var(--radius) 0 0;
+        background: linear-gradient(180deg, var(--gold), rgba(185, 146, 63, 0.35));
+        border: 1px solid rgba(243, 231, 179, 0.3);
+      }
+
+      .bar strong {
+        color: var(--cream);
+        font-size: 17px;
+      }
+
+      .bar span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .hotspots {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .hotspot {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        min-height: 92px;
+        padding: 12px;
+        background: rgba(245, 242, 234, 0.055);
+        display: grid;
+        align-content: space-between;
+      }
+
+      .hotspot strong {
+        color: var(--cream);
+      }
+
+      .hotspot span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .split-statement {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      .statement {
+        min-height: 310px;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        padding: clamp(20px, 3vw, 34px);
+        display: grid;
+        align-content: space-between;
+        background: rgba(245, 242, 234, 0.06);
+      }
+
+      .statement.dark {
+        background:
+          linear-gradient(135deg, rgba(201, 76, 76, 0.14), transparent 48%),
+          rgba(11, 11, 13, 0.7);
+      }
+
+      .statement.light {
+        color: var(--obsidian);
+        background:
+          linear-gradient(135deg, rgba(185, 146, 63, 0.28), transparent 52%),
+          var(--bone);
+      }
+
+      .statement.light h3,
+      .statement.light p,
+      .statement.light strong {
+        color: var(--obsidian);
+      }
+
+      .statement strong {
+        font-size: clamp(44px, 7vw, 86px);
+        line-height: 0.92;
+        color: var(--cream);
+      }
+
+      .statement p {
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.45;
+      }
+
+      .compare {
+        display: grid;
+        gap: 8px;
+      }
+
+      .compare-row {
+        display: grid;
+        grid-template-columns: 0.9fr 1fr 1fr;
+        gap: 8px;
+        align-items: stretch;
+      }
+
+      .compare-cell {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 13px;
+        background: rgba(245, 242, 234, 0.055);
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.35;
+      }
+
+      .compare-cell.head {
+        color: var(--cream);
+        font-weight: 900;
+        background: rgba(185, 146, 63, 0.13);
+      }
+
+      .compare-cell.win {
+        color: var(--cream);
+        border-color: rgba(185, 146, 63, 0.35);
+        background: rgba(185, 146, 63, 0.08);
+      }
+
+      .market-reveal {
+        display: grid;
+        gap: 16px;
+      }
+
+      .coin-rack {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .coin {
+        min-height: 94px;
+        border-radius: 18px;
+        border: 1px solid rgba(245, 242, 234, 0.12);
+        background: rgba(245, 242, 234, 0.045);
+        display: grid;
+        place-items: center;
+        text-align: center;
+        padding: 10px 8px;
+        color: var(--muted);
+        transform: scale(0.96);
+        opacity: 0.65;
+        transition: transform 220ms ease, opacity 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+      }
+
+      .coin strong {
+        display: block;
+        color: var(--cream);
+        font-size: 15px;
+        line-height: 1.05;
+      }
+
+      .coin span {
+        display: block;
+        font-size: 11px;
+        line-height: 1.2;
+        margin-top: 4px;
+      }
+
+      .coin.active,
+      .coin.youth.revealed {
+        opacity: 1;
+        transform: scale(1);
+        border-color: rgba(185, 146, 63, 0.45);
+        box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+      }
+
+      .coin.youth {
+        background: linear-gradient(135deg, rgba(185, 146, 63, 0.22), rgba(185, 146, 63, 0.12));
+      }
+
+      .market-board {
+        display: grid;
+        grid-template-columns: minmax(260px, 0.78fr) minmax(360px, 1.2fr) minmax(260px, 0.78fr);
+        gap: 18px;
+        align-items: center;
+      }
+
+      .market-side {
+        display: grid;
+        gap: 14px;
+      }
+
+      .market-side.right {
+        text-align: right;
+      }
+
+      .market-side h3 {
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .market-callout {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+        background: rgba(245, 242, 234, 0.05);
+      }
+
+      .market-callout strong {
+        display: block;
+        color: var(--cream);
+        font-size: clamp(26px, 3vw, 44px);
+        line-height: 1;
+      }
+
+      .market-callout span,
+      .market-callout p {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.45;
+        margin: 0;
+      }
+
+      .market-callout.hidden {
+        opacity: 0.22;
+      }
+
+      .scale-stage {
+        position: relative;
+        min-height: 470px;
+        border-radius: 22px;
+        border: 1px solid rgba(245, 242, 234, 0.14);
+        background:
+          radial-gradient(circle at 50% 8%, rgba(185, 146, 63, 0.16), transparent 26%),
+          linear-gradient(180deg, rgba(245, 242, 234, 0.03), rgba(245, 242, 234, 0.02));
+        overflow: hidden;
+      }
+
+      .scale-header {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        right: 18px;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+      }
+
+      .stage-indicator {
+        color: var(--graphite);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 800;
+      }
+
+      .tech-scale {
+        position: absolute;
+        inset: 68px 24px 24px;
+      }
+
+      .tech-beam {
+        position: absolute;
+        left: 8%;
+        right: 8%;
+        top: 112px;
+        height: 12px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #b9923f, #f5f2ea 48%, #f3e7b3);
+        transform-origin: center;
+        transform: rotate(var(--market-tilt, 0deg));
+        transition: transform 380ms ease;
+      }
+
+      .tech-pivot {
+        position: absolute;
+        left: 50%;
+        top: 70px;
+        width: 54px;
+        aspect-ratio: 1;
+        transform: translateX(-50%);
+        border-radius: 999px;
+        border: 10px solid rgba(245, 242, 234, 0.9);
+        background: rgba(185, 146, 63, 0.86);
+        box-shadow: 0 0 30px rgba(185, 146, 63, 0.35);
+      }
+
+      .tech-post {
+        position: absolute;
+        left: 50%;
+        top: 122px;
+        bottom: 42px;
+        width: 12px;
+        transform: translateX(-50%);
+        border-radius: 999px;
+        background: linear-gradient(180deg, rgba(245, 242, 234, 0.95), rgba(185, 146, 63, 0.7));
+      }
+
+      .tech-base {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 220px;
+        height: 56px;
+        transform: translateX(-50%);
+        border-radius: 18px 18px 8px 8px;
+        background: linear-gradient(180deg, rgba(121, 132, 168, 0.9), rgba(185, 146, 63, 0.65));
+      }
+
+      .tech-base::before {
+        content: "";
+        position: absolute;
+        left: 18px;
+        right: 18px;
+        bottom: 44px;
+        height: 28px;
+        border-radius: 14px 14px 6px 6px;
+        background: linear-gradient(180deg, rgba(141, 156, 188, 0.95), rgba(93, 108, 148, 0.75));
+      }
+
+      .tech-pan {
+        position: absolute;
+        top: 120px;
+        width: 36%;
+        display: grid;
+        justify-items: center;
+      }
+
+      .tech-pan.left {
+        left: 2%;
+        transform: translateY(var(--left-drop, 8px));
+        transition: transform 380ms ease;
+      }
+
+      .tech-pan.right {
+        right: 2%;
+        transform: translateY(var(--right-drop, 8px));
+        transition: transform 380ms ease;
+      }
+
+      .hanger {
+        width: 2px;
+        height: 108px;
+        background: rgba(245, 242, 234, 0.65);
+      }
+
+      .tray {
+        width: min(260px, 100%);
+        min-height: 30px;
+        border-radius: 0 0 90px 90px;
+        border: 1px solid rgba(245, 242, 234, 0.18);
+        background: rgba(245, 242, 234, 0.14);
+        box-shadow: inset 0 -18px 30px rgba(0, 0, 0, 0.16);
+      }
+
+      .stack {
+        width: min(260px, 100%);
+        min-height: 150px;
+        display: grid;
+        align-content: end;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .stack-coin {
+        min-height: 34px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 8px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: white;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 220ms ease, transform 220ms ease, width 320ms ease, min-height 320ms ease;
+      }
+
+      .stack-coin.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .stack-coin.league {
+        background: linear-gradient(90deg, rgba(185, 146, 63, 0.95), rgba(201, 76, 76, 0.86));
+      }
+
+      .stack-coin.youth {
+        background: linear-gradient(90deg, rgba(185, 146, 63, 0.95), rgba(185, 146, 63, 0.92));
+        width: 74%;
+        justify-self: center;
+      }
+
+      .stack-coin.youth.grown {
+        width: 100%;
+        min-height: 60px;
+        font-size: 17px;
+      }
+
+      .market-summary {
+        display: grid;
+        gap: 12px;
+      }
+
+      .market-summary .lead.reveal {
+        opacity: 0.18;
+        transition: opacity 280ms ease;
+      }
+
+      .market-summary .lead.reveal.visible {
+        opacity: 1;
+      }
+
+      .source-note {
+        color: var(--graphite);
+        font-size: 11px;
+        line-height: 1.35;
+      }
+
+      .opportunity-stage {
+        display: grid;
+        grid-template-columns: minmax(340px, 1.08fr) minmax(300px, 0.92fr);
+        gap: 20px;
+        align-items: center;
+      }
+
+      .market-frame {
+        position: relative;
+        min-height: 520px;
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid rgba(245, 242, 234, 0.14);
+        background:
+          radial-gradient(circle at 50% 0%, rgba(185, 146, 63, 0.22), transparent 28%),
+          radial-gradient(circle at 82% 22%, rgba(185, 146, 63, 0.18), transparent 22%),
+          linear-gradient(180deg, rgba(6, 10, 20, 0.98), rgba(11, 11, 13, 0.98));
+        box-shadow: 0 40px 120px rgba(0, 0, 0, 0.4);
+      }
+
+      .market-frame::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(185, 146, 63, 0.16) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(185, 146, 63, 0.16) 1px, transparent 1px);
+        background-size: 44px 44px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 96%);
+        pointer-events: none;
+      }
+
+      .market-frame-inner {
+        position: relative;
+        z-index: 1;
+        padding: 22px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .frame-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+      }
+
+      .frame-header strong {
+        color: var(--bone);
+        font-size: 16px;
+      }
+
+      .market-funnel {
+        display: grid;
+        gap: 12px;
+      }
+
+      .funnel-band {
+        position: relative;
+        border-radius: 18px;
+        border: 1px solid rgba(245, 242, 234, 0.14);
+        padding: 18px;
+        overflow: hidden;
+      }
+
+      .funnel-band::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(185, 146, 63, 0.2), transparent 72%);
+        pointer-events: none;
+      }
+
+      .funnel-band.total {
+        min-height: 170px;
+        width: 100%;
+        background: rgba(245, 242, 234, 0.05);
+      }
+
+      .funnel-band.investment {
+        min-height: 142px;
+        width: 76%;
+        margin-left: auto;
+        background: rgba(185, 146, 63, 0.08);
+      }
+
+      .funnel-band.top25 {
+        min-height: 128px;
+        width: 48%;
+        margin-left: auto;
+        background: rgba(185, 146, 63, 0.12);
+      }
+
+      .funnel-band h3 {
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 10px;
+      }
+
+      .funnel-band strong {
+        display: block;
+        color: var(--bone);
+        font-size: clamp(36px, 5vw, 64px);
+        line-height: 0.95;
+      }
+
+      .funnel-band p {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.45;
+        max-width: 420px;
+        margin-top: 10px;
+      }
+
+      .investment-meter {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 16px;
+        align-items: center;
+        border-radius: 16px;
+        border: 1px solid rgba(185, 146, 63, 0.2);
+        background: rgba(185, 146, 63, 0.08);
+        padding: 16px 18px;
+      }
+
+      .investment-meter strong {
+        display: block;
+        color: var(--cream);
+        font-size: clamp(28px, 3vw, 44px);
+        line-height: 1;
+      }
+
+      .investment-meter span {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .meter-chip {
+        min-width: 116px;
+        min-height: 116px;
+        border-radius: 999px;
+        border: 2px solid rgba(185, 146, 63, 0.42);
+        display: grid;
+        place-items: center;
+        text-align: center;
+        background: radial-gradient(circle, rgba(185, 146, 63, 0.18), rgba(185, 146, 63, 0.04));
+        color: var(--cream);
+        font-weight: 900;
+      }
+
+      .meter-chip b {
+        display: block;
+        font-size: 30px;
+        line-height: 1;
+      }
+
+      .opportunity-copy {
+        display: grid;
+        gap: 14px;
+      }
+
+      .opportunity-copy .panel {
+        display: grid;
+        gap: 12px;
+      }
+
+      .opportunity-points {
+        display: grid;
+        gap: 10px;
+      }
+
+      .opportunity-item {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: rgba(245, 242, 234, 0.05);
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .opportunity-item strong {
+        color: var(--cream);
+      }
+
+      .business-slide {
+        display: grid;
+        gap: 18px;
+      }
+
+      .business-flow {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        align-items: stretch;
+      }
+
+      .flow-card {
+        position: relative;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px;
+        background: rgba(245, 242, 234, 0.05);
+        display: grid;
+        gap: 10px;
+      }
+
+      .flow-card strong {
+        color: var(--cream);
+        font-size: 20px;
+        line-height: 1.05;
+      }
+
+      .flow-card h3 {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--gold);
+      }
+
+      .flow-card p {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.45;
+        margin: 0;
+      }
+
+      .flow-arrow {
+        position: absolute;
+        top: 50%;
+        right: -18px;
+        transform: translateY(-50%);
+        color: var(--gold);
+        font-size: 28px;
+        font-weight: 900;
+        z-index: 1;
+      }
+
+      .business-table {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        overflow: hidden;
+        background: rgba(245, 242, 234, 0.045);
+      }
+
+      .table-row {
+        display: grid;
+        grid-template-columns: 0.55fr 1fr 1.45fr 1fr 1fr 1fr;
+        gap: 0;
+      }
+
+      .table-row + .table-row {
+        border-top: 1px solid rgba(245, 242, 234, 0.1);
+      }
+
+      .table-row.header {
+        background: rgba(185, 146, 63, 0.14);
+      }
+
+      .cell {
+        padding: 14px 12px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.4;
+        border-right: 1px solid rgba(245, 242, 234, 0.08);
+      }
+
+      .cell:last-child {
+        border-right: 0;
+      }
+
+      .table-row.header .cell {
+        color: var(--cream);
+        font-weight: 900;
+      }
+
+      .problem-stage {
+        display: grid;
+        grid-template-columns: minmax(280px, 0.95fr) minmax(320px, 1.1fr) minmax(280px, 0.95fr);
+        gap: 18px;
+        align-items: center;
+      }
+
+      .problem-copy {
+        display: grid;
+        gap: 18px;
+      }
+
+      .problem-node {
+        display: grid;
+        gap: 10px;
+      }
+
+      .problem-node h3 {
+        font-size: 20px;
+      }
+
+      .problem-node p {
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.55;
+      }
+
+      .problem-node .accent-label {
+        color: var(--gold);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        font-weight: 900;
+      }
+
+      .problem-visual {
+        min-height: 440px;
+        display: grid;
+        place-items: center;
+        position: relative;
+      }
+
+      .problem-core {
+        position: relative;
+        width: min(420px, 100%);
+        aspect-ratio: 1 / 1.02;
+      }
+
+      .problem-hex {
+        position: absolute;
+        inset: 0;
+        clip-path: polygon(50% 0%, 90% 22%, 90% 72%, 50% 100%, 10% 72%, 10% 22%);
+        border: 2px solid rgba(245, 242, 234, 0.16);
+        background: linear-gradient(180deg, rgba(245, 242, 234, 0.04), rgba(245, 242, 234, 0.02));
+      }
+
+      .problem-piece {
+        position: absolute;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        color: var(--obsidian);
+        font-weight: 900;
+        box-shadow: var(--shadow);
+      }
+
+      .problem-piece.top {
+        top: 24px;
+        left: 50%;
+        width: 244px;
+        height: 142px;
+        transform: translateX(-50%);
+        clip-path: polygon(50% 0%, 100% 35%, 100% 100%, 0 100%, 0 35%);
+        background: linear-gradient(135deg, rgba(18, 26, 42, 0.98), rgba(185, 146, 63, 0.72));
+        color: var(--bone);
+      }
+
+      .problem-piece.left {
+        left: 8px;
+        bottom: 26px;
+        width: 188px;
+        height: 188px;
+        clip-path: polygon(50% 0%, 100% 25%, 100% 74%, 50% 100%, 0 74%, 0 25%);
+        background: linear-gradient(135deg, rgba(11, 11, 13, 0.96), rgba(18, 26, 42, 0.92));
+        color: var(--cream);
+      }
+
+      .problem-piece.right {
+        right: 8px;
+        bottom: 26px;
+        width: 188px;
+        height: 188px;
+        clip-path: polygon(50% 0%, 100% 25%, 100% 74%, 50% 100%, 0 74%, 0 25%);
+        background: linear-gradient(135deg, rgba(245, 242, 234, 0.92), rgba(243, 231, 179, 0.76));
+        color: var(--obsidian);
+      }
+
+      .problem-piece::after {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border: 2px solid rgba(255, 255, 255, 0.55);
+        clip-path: inherit;
+      }
+
+      .problem-piece span {
+        position: relative;
+        z-index: 1;
+        width: 72%;
+        font-size: 17px;
+        line-height: 1.08;
+      }
+
+      .solution-stage {
+        display: grid;
+        grid-template-columns: minmax(320px, 1.08fr) minmax(280px, 0.92fr);
+        gap: 22px;
+        align-items: center;
+      }
+
+      .dashboard-shell {
+        position: relative;
+        min-height: 500px;
+        border-radius: 24px;
+        padding: 18px;
+        border: 1px solid rgba(245, 242, 234, 0.18);
+        background:
+          radial-gradient(circle at 72% 14%, rgba(201, 76, 76, 0.22), transparent 28%),
+          radial-gradient(circle at 20% 85%, rgba(185, 146, 63, 0.2), transparent 34%),
+          linear-gradient(145deg, rgba(11, 11, 13, 0.98), rgba(18, 26, 42, 0.98));
+        overflow: hidden;
+        box-shadow: 0 40px 120px rgba(0, 0, 0, 0.45);
+      }
+
+      .dashboard-shell::before {
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(245, 242, 234, 0.09);
+        pointer-events: none;
+      }
+
+      .dashboard-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+
+      .dashboard-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .dashboard-dot {
+        width: 11px;
+        aspect-ratio: 1;
+        border-radius: 999px;
+        background: var(--gold);
+        box-shadow: 0 0 18px rgba(185, 146, 63, 0.6);
+      }
+
+      .dashboard-kpis {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .kpi {
+        border: 1px solid rgba(245, 242, 234, 0.14);
+        border-radius: 14px;
+        padding: 14px;
+        background: rgba(245, 242, 234, 0.05);
+      }
+
+      .kpi strong {
+        display: block;
+        color: var(--bone);
+        font-size: 28px;
+        line-height: 1;
+      }
+
+      .kpi span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.3;
+        margin-top: 8px;
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 12px;
+      }
+
+      .dash-panel {
+        border: 1px solid rgba(245, 242, 234, 0.13);
+        border-radius: 16px;
+        padding: 14px;
+        background: rgba(245, 242, 234, 0.045);
+      }
+
+      .dash-panel h3 {
+        font-size: 15px;
+        margin-bottom: 12px;
+      }
+
+      .deal-chart {
+        display: grid;
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+        gap: 6px;
+        align-items: end;
+        min-height: 150px;
+      }
+
+      .deal-chart span {
+        display: block;
+        border-radius: 8px 8px 0 0;
+        background: linear-gradient(180deg, var(--alert), rgba(201, 76, 76, 0.22));
+        border: 1px solid rgba(245, 242, 234, 0.14);
+      }
+
+      .dash-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .dash-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(245, 242, 234, 0.045);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .pill {
+        border-radius: 999px;
+        min-height: 28px;
+        padding: 6px 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 900;
+      }
+
+      .pill.green {
+        color: #0d1b12;
+        background: #d9d3c2;
+        border: 1px solid rgba(185, 146, 63, 0.4);
+      }
+
+      .pill.gold {
+        color: #2a1e07;
+        background: #f3e7b3;
+      }
+
+      .pill.pink {
+        color: white;
+        background: #c94c4c;
+      }
+
+      .heatmap {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .heatmap span {
+        min-height: 62px;
+        border-radius: 12px;
+        border: 1px solid rgba(245, 242, 234, 0.14);
+        background: linear-gradient(135deg, rgba(185, 146, 63, 0.2), rgba(185, 146, 63, 0.08));
+      }
+
+      .solution-copy {
+        display: grid;
+        gap: 16px;
+      }
+
+      .solution-points {
+        display: grid;
+        gap: 10px;
+      }
+
+      .solution-point {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px 16px;
+        background: rgba(245, 242, 234, 0.05);
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .market-static {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+        align-items: stretch;
+      }
+
+      .market-stat {
+        min-height: 420px;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 28px 24px;
+        background:
+          radial-gradient(circle at 50% 20%, rgba(185, 146, 63, 0.14), transparent 28%),
+          rgba(245, 242, 234, 0.04);
+        display: grid;
+        justify-items: center;
+        align-content: center;
+        gap: 18px;
+        text-align: center;
+      }
+
+      .market-stat h3 {
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .market-bubble {
+        width: min(240px, 72%);
+        aspect-ratio: 1;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        color: white;
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.26);
+      }
+
+      .market-bubble.pro {
+        background: linear-gradient(135deg, rgba(185, 146, 63, 0.98), rgba(201, 76, 76, 0.9));
+      }
+
+      .market-bubble.youth {
+        background: linear-gradient(135deg, rgba(185, 146, 63, 0.98), rgba(185, 146, 63, 0.92));
+      }
+
+      .market-bubble strong {
+        display: block;
+        font-size: clamp(34px, 6vw, 62px);
+        line-height: 0.95;
+      }
+
+      .market-bubble span {
+        display: block;
+        font-size: 18px;
+        line-height: 1.1;
+      }
+
+      .market-stat p {
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.5;
+        max-width: 360px;
+        margin: 0;
+      }
+
+      .market-compare {
+        display: grid;
+        grid-template-columns: minmax(280px, 0.9fr) minmax(360px, 1.2fr) minmax(280px, 0.9fr);
+        gap: 20px;
+        align-items: center;
+      }
+
+      .market-side-card {
+        display: grid;
+        gap: 12px;
+      }
+
+      .market-side-card .market-callout {
+        min-height: 180px;
+      }
+
+      .market-balance {
+        position: relative;
+        min-height: 470px;
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid rgba(245, 242, 234, 0.14);
+        background:
+          radial-gradient(circle at 50% 0%, rgba(185, 146, 63, 0.2), transparent 26%),
+          linear-gradient(180deg, rgba(11, 11, 13, 0.98), rgba(18, 26, 42, 0.96));
+      }
+
+      .market-balance::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(185, 146, 63, 0.12) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(185, 146, 63, 0.12) 1px, transparent 1px);
+        background-size: 42px 42px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.88), transparent 96%);
+      }
+
+      .balance-shell {
+        position: absolute;
+        inset: 18px;
+      }
+
+      .balance-shell .tech-beam {
+        top: 130px;
+      }
+
+      .balance-shell .tech-pivot {
+        top: 88px;
+      }
+
+      .balance-shell .tech-post {
+        top: 140px;
+      }
+
+      .balance-shell .tech-pan {
+        top: 138px;
+      }
+
+      .coin-cluster {
+        width: min(260px, 100%);
+        min-height: 160px;
+        display: grid;
+        place-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .pro-pair {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        opacity: 0.28;
+        transition: opacity 260ms ease, transform 260ms ease;
+        transform: translateY(8px);
+      }
+
+      .pro-pair.visible,
+      .youth-orb.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .orb {
+        width: 96px;
+        aspect-ratio: 1;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        color: white;
+        font-weight: 900;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 18px 36px rgba(0, 0, 0, 0.25);
+      }
+
+      .orb.pro {
+        background: linear-gradient(135deg, rgba(185, 146, 63, 0.95), rgba(201, 76, 76, 0.82));
+      }
+
+      .orb.youth {
+        width: 156px;
+        background: linear-gradient(135deg, rgba(185, 146, 63, 0.96), rgba(185, 146, 63, 0.9));
+      }
+
+      .orb span {
+        display: block;
+        width: 78%;
+        font-size: 14px;
+        line-height: 1.1;
+      }
+
+      .youth-orb {
+        opacity: 0.28;
+        transition: opacity 260ms ease, transform 260ms ease;
+        transform: translateY(8px);
+      }
+
+      .list-panel {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px;
+        background: rgba(245, 242, 234, 0.05);
+        display: grid;
+        gap: 12px;
+      }
+
+      .bullet-stack {
+        display: grid;
+        gap: 10px;
+      }
+
+      .bullet-row {
+        border: 1px solid rgba(245, 242, 234, 0.12);
+        border-radius: 14px;
+        padding: 12px 14px;
+        color: var(--muted);
+        background: rgba(245, 242, 234, 0.04);
+        line-height: 1.45;
+      }
+
+      .bullet-row strong {
+        color: var(--cream);
+      }
+
+      .vision-ladder {
+        display: grid;
+        gap: 12px;
+      }
+
+      .vision-step {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px 18px;
+        background: rgba(245, 242, 234, 0.05);
+        color: var(--muted);
+      }
+
+      .vision-step strong {
+        display: block;
+        color: var(--cream);
+        font-size: 20px;
+        margin-bottom: 8px;
+      }
+
+      .build-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .build-card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px;
+        background: rgba(245, 242, 234, 0.05);
+        min-height: 170px;
+        display: grid;
+        align-content: space-between;
+        gap: 12px;
+      }
+
+      .build-card strong {
+        color: var(--cream);
+        font-size: 22px;
+        line-height: 1.05;
+      }
+
+      .build-card p {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.45;
+        margin: 0;
+      }
+
+      .footer {
+        min-height: 54px;
+        border-top: 1px solid var(--line);
+        padding: 0 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        color: var(--graphite);
+        font-size: 12px;
+      }
+
+      .mobile-menu {
+        display: none;
+      }
+
+      @media (max-width: 980px) {
+        body {
+          overflow: auto;
+        }
+
+        .app {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: fixed;
+          inset: 0 auto 0 0;
+          width: min(320px, 88vw);
+          z-index: 10;
+          transform: translateX(-104%);
+          transition: transform 180ms ease;
+        }
+
+        .sidebar.open {
+          transform: translateX(0);
+        }
+
+        .mobile-menu {
+          display: inline-flex;
+        }
+
+        .stage {
+          height: 100svh;
+        }
+
+        .two-col,
+        .three-col,
+        .four-col,
+        .palettes,
+        .calc,
+        .pipeline,
+        .split-statement,
+        .problem-stage,
+        .solution-stage,
+        .dashboard-grid,
+        .market-board,
+        .opportunity-stage,
+        .market-compare,
+        .build-grid,
+        .market-static,
+        .business-flow {
+          grid-template-columns: 1fr;
+        }
+
+        .flow-arrow {
+          display: none;
+        }
+
+        .coin-rack {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .metric-grid,
+        .hotspots {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .layer {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .topbar,
+        .footer {
+          padding-inline: 16px;
+        }
+
+        .slide {
+          padding: 20px 16px;
+        }
+
+        .metric-grid,
+        .hotspots,
+        .swatches {
+          grid-template-columns: 1fr;
+        }
+
+        .dashboard-kpis {
+          grid-template-columns: 1fr;
+        }
+
+        .coin-rack {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .table-row {
+          grid-template-columns: 1fr;
+        }
+
+        .cell {
+          border-right: 0;
+          border-bottom: 1px solid rgba(245, 242, 234, 0.08);
+        }
+
+        .table-row .cell:last-child {
+          border-bottom: 0;
+        }
+
+        .compare-row {
+          grid-template-columns: 1fr;
+        }
+
+        .scale-visual {
+          grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
+        }
+
+        .market-metrics {
+          grid-template-columns: 1fr !important;
+        }
+
+        .hero-visual {
+          min-height: 300px;
+        }
+      }
+
+      @media print {
+        body {
+          overflow: visible;
+          background: white;
+          color: #111;
+        }
+
+        .app {
+          display: block;
+          background: white;
+        }
+
+        .sidebar,
+        .topbar,
+        .footer {
+          display: none;
+        }
+
+        .stage,
+        .slides {
+          height: auto;
+          overflow: visible;
+          display: block;
+        }
+
+        .slide,
+        .slide.active {
+          position: relative;
+          display: block;
+          min-height: 100vh;
+          page-break-after: always;
+          color: #111;
+          background: white;
+        }
+
+        .panel,
+        .card,
+        .metric,
+        .step,
+        .hotspot,
+        .layer-name,
+        .layer-detail {
+          box-shadow: none;
+          border-color: #d4d4d4;
+          color: #111;
+          background: white;
+        }
+
+        .body,
+        .lead,
+        .card p,
+        .step p,
+        .layer-detail,
+        .hotspot span {
+          color: #333;
+        }
+      }
+
+      /* --- Added for v2: timeline, vignette, team, ask, revised calc --- */
+      .timeline {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .time-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 18px;
+        background: rgba(245, 242, 234, 0.05);
+        display: grid;
+        gap: 10px;
+        align-content: start;
+      }
+
+      .time-card .year {
+        color: var(--gold);
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-weight: 900;
+      }
+
+      .time-card strong {
+        color: var(--cream);
+        font-size: 17px;
+        line-height: 1.15;
+      }
+
+      .time-card p {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .vignette {
+        border: 1px solid rgba(185, 146, 63, 0.28);
+        border-left: 4px solid var(--gold);
+        background: rgba(245, 242, 234, 0.04);
+        border-radius: var(--radius);
+        padding: clamp(22px, 3vw, 34px);
+        display: grid;
+        gap: 14px;
+      }
+
+      .vignette .who {
+        color: var(--gold);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 900;
+      }
+
+      .vignette p {
+        color: var(--bone);
+        font-size: clamp(16px, 1.6vw, 19px);
+        line-height: 1.55;
+      }
+
+      .vignette p + p {
+        color: var(--muted);
+      }
+
+      .vignette .damage {
+        color: var(--alert);
+        font-weight: 800;
+      }
+
+      .problem-frames {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .problem-frames .frame {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 18px;
+        background: rgba(245, 242, 234, 0.05);
+        display: grid;
+        gap: 8px;
+      }
+
+      .problem-frames .frame h3 {
+        font-size: 15px;
+      }
+
+      .problem-frames .frame p {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .team-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .team-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 20px;
+        background: rgba(245, 242, 234, 0.05);
+        display: grid;
+        gap: 10px;
+      }
+
+      .team-card .avatar {
+        width: 56px;
+        aspect-ratio: 1;
+        border-radius: 999px;
+        border: 1px solid rgba(185, 146, 63, 0.5);
+        background: linear-gradient(135deg, rgba(185, 146, 63, 0.28), rgba(18, 26, 42, 0.6));
+        display: grid;
+        place-items: center;
+        color: var(--cream);
+        font-weight: 900;
+        font-size: 18px;
+      }
+
+      .team-card strong {
+        color: var(--cream);
+        font-size: 17px;
+        display: block;
+      }
+
+      .team-card .role {
+        color: var(--gold);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        font-weight: 800;
+      }
+
+      .team-card p {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .team-card .placeholder-tag {
+        color: var(--graphite);
+        font-size: 11px;
+        font-style: italic;
+      }
+
+      .ask-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .ask-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 20px;
+        background: rgba(245, 242, 234, 0.05);
+        display: grid;
+        gap: 10px;
+      }
+
+      .ask-card .ask-num {
+        color: var(--gold);
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-weight: 900;
+      }
+
+      .ask-card strong {
+        color: var(--cream);
+        font-size: 19px;
+        line-height: 1.2;
+      }
+
+      .ask-card p {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .channel-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .channel-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 16px;
+        background: rgba(245, 242, 234, 0.05);
+        display: grid;
+        gap: 8px;
+        align-content: start;
+      }
+
+      .channel-card .stage-tag {
+        color: var(--gold);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 900;
+      }
+
+      .channel-card strong {
+        color: var(--cream);
+        font-size: 16px;
+        line-height: 1.15;
+      }
+
+      .channel-card .metric-line {
+        color: var(--bone);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .channel-card p {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .unit-econ {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .unit-econ .econ-tile {
+        border: 1px solid rgba(185, 146, 63, 0.3);
+        border-radius: var(--radius);
+        padding: 14px 16px;
+        background: rgba(11, 11, 13, 0.4);
+      }
+
+      .unit-econ .econ-tile strong {
+        display: block;
+        color: var(--cream);
+        font-size: clamp(22px, 2.6vw, 32px);
+        line-height: 1;
+      }
+
+      .unit-econ .econ-tile span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 6px;
+      }
+
+      .milestone-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .milestone {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 16px;
+        background: rgba(245, 242, 234, 0.05);
+        display: grid;
+        gap: 8px;
+        align-content: start;
+      }
+
+      .milestone.done {
+        border-color: rgba(185, 146, 63, 0.5);
+        background: rgba(185, 146, 63, 0.08);
+      }
+
+      .milestone.now {
+        border-color: rgba(185, 146, 63, 0.7);
+        background: rgba(185, 146, 63, 0.14);
+        box-shadow: 0 0 0 1px rgba(185, 146, 63, 0.3) inset;
+      }
+
+      .milestone .mstatus {
+        color: var(--gold);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-weight: 900;
+      }
+
+      .milestone .mstatus.done-tag::before { content: "✓ "; }
+      .milestone .mstatus.now-tag::before { content: "● "; }
+      .milestone .mstatus.next-tag { color: var(--muted); }
+
+      .milestone strong {
+        color: var(--cream);
+        font-size: 15px;
+        line-height: 1.2;
+      }
+
+      .milestone p {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .milestone .placeholder-tag {
+        color: var(--graphite);
+        font-size: 10px;
+        font-style: italic;
+        letter-spacing: 0;
+      }
+
+      .compete-table {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+
+      .compete-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        gap: 0;
+      }
+
+      .compete-row + .compete-row {
+        border-top: 1px solid var(--line);
+      }
+
+      .compete-row.head {
+        background: rgba(185, 146, 63, 0.14);
+      }
+
+      .compete-cell {
+        padding: 14px 14px;
+        border-right: 1px solid rgba(245, 242, 234, 0.08);
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .compete-cell:last-child { border-right: 0; }
+
+      .compete-row.head .compete-cell {
+        color: var(--cream);
+        font-weight: 900;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .compete-cell.us {
+        background: rgba(185, 146, 63, 0.08);
+        color: var(--bone);
+        font-weight: 700;
+      }
+
+      .mark-yes { color: var(--gold); font-weight: 900; }
+      .mark-no { color: var(--graphite); }
+      .mark-partial { color: var(--cream); }
+
+      .calc-assumptions {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .calc-assumptions h4 {
+        color: var(--gold);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-weight: 900;
+        margin: 0;
+      }
+
+      .calc-year-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .calc-year-tile {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: rgba(11, 11, 13, 0.4);
+        display: grid;
+        gap: 6px;
+      }
+
+      .calc-year-tile .ytag {
+        color: var(--gold);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 900;
+      }
+
+      .calc-year-tile strong {
+        color: var(--cream);
+        font-size: clamp(22px, 2.4vw, 30px);
+        line-height: 1;
+      }
+
+      .calc-year-tile span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      /* Hide legacy sidebar list on present-mode */
+      .app.present .sidebar { display: none; }
+      .app.present { grid-template-columns: 1fr; }
+
+      .present-toggle {
+        min-height: 36px;
+        border-radius: var(--radius);
+        border: 1px solid rgba(185, 146, 63, 0.45);
+        background: transparent;
+        color: var(--cream);
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 800;
+        cursor: pointer;
+        padding: 0 12px;
+      }
+
+      .present-toggle:hover {
+        background: rgba(185, 146, 63, 0.12);
+      }
+
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <aside class="sidebar" id="sidebar" aria-label="Slide navigation">
+        <div class="brand-lockup">
+          <div class="mark">OYF</div>
+          <strong>AthleteFO Pitch Deck</strong>
+          <span>Stop Renting Your Name. Own Your Franchise.</span>
+        </div>
+        <nav class="slide-list" id="slideList"></nav>
+        <div class="deck-controls">
+          <div class="control-row">
+            <button class="btn" id="prevBtn" type="button" aria-label="Previous slide">Prev</button>
+            <button class="btn" id="nextBtn" type="button" aria-label="Next slide">Next</button>
+          </div>
+          <button class="btn" type="button" onclick="window.print()">Print / Export PDF</button>
+          <div class="hint">Use arrow keys or the slide list. Interactive panels update in place.</div>
+        </div>
+      </aside>
+
+      <section class="stage">
+        <header class="topbar">
+          <div style="display:flex;gap:10px;align-items:center;"><button class="btn mobile-menu" id="menuBtn" type="button">Menu</button><button class="present-toggle" id="presentBtn" type="button" aria-pressed="false">Present</button></div>
+          <div>
+            <div class="eyebrow" id="sectionLabel">Investment Narrative</div>
+          </div>
+          <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+        </header>
+
+        <div class="slides" id="slides">
+
+          <!-- 1. Cover (merged with old Ambition) -->
+          <article class="slide active" data-title="Cover" data-section="Opening">
+            <div class="slide-inner two-col">
+              <div>
+                <div class="badge">Own Your Franchise</div>
+                <h1>AthleteFO</h1>
+                <p class="tagline">The front office for athletes and families building enterprise value in the NIL era.</p>
+                <p class="lead">Move the athlete household from talent for hire to franchise owner. Structure, data, IP control, and repeatable decision systems, built as a recurring platform.</p>
+              </div>
+              <div class="panel hero-visual" aria-label="Abstract front office field visual">
+                <div class="field"></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 2. Why Now -->
+          <article class="slide" data-title="Why Now" data-section="Why Now">
+            <div class="slide-inner">
+              <div>
+                <div class="badge">Why Now</div>
+                <h2>The window opened four years ago. The infrastructure layer still has not been built.</h2>
+              </div>
+              <div class="timeline">
+                <div class="time-card">
+                  <span class="year">2021</span>
+                  <strong>NIL rules take effect</strong>
+                  <p>The NCAA allows college athletes to earn from name, image, and likeness. High school state laws begin to follow within 18 months.</p>
+                </div>
+                <div class="time-card">
+                  <span class="year">2022 to 2024</span>
+                  <strong>Youth sports spend accelerates</strong>
+                  <p>Household spending on youth sports grew past $40B and continues to climb. The top 25% of families now spend $12K+ per athlete annually.</p>
+                </div>
+                <div class="time-card">
+                  <span class="year">2024 to 2025</span>
+                  <strong>First NIL era enters the pros</strong>
+                  <p>The first wave of athletes who grew up commercializing at 15 and 16 is now entering professional leagues. Their younger siblings and teammates watched the whole thing.</p>
+                </div>
+                <div class="time-card">
+                  <span class="year">Now</span>
+                  <strong>The tools have not caught up</strong>
+                  <p>Agents, collectives, and software still treat the family as a pass-through. No one is selling an operating layer to the household itself.</p>
+                </div>
+              </div>
+              <p class="lead">NIL made every recruitable athlete a commercial entity. The category for managing that reality at the household level does not yet exist.</p>
+            </div>
+          </article>
+
+          <!-- 3. Problem (vignette + frame) -->
+          <article class="slide" data-title="Problem" data-section="The Gap">
+            <div class="slide-inner">
+              <div>
+                <div class="badge">The Problem</div>
+                <h2>High-investment families are running a business without a business.</h2>
+              </div>
+              <div class="vignette">
+                <span class="who">Composite household, 2024</span>
+                <p>The Reyes family has spent roughly <strong>$47K</strong> over three seasons on travel softball, showcases, and private coaching for their 16-year-old daughter. She is a D1 recruiting target.</p>
+                <p>A regional apparel brand offers her a <strong>$4,500 NIL agreement</strong>. The family has 72 hours to review a 14-page contract, decide whether to form an entity, and think through multi-state tax exposure. Their travel coach knows "a guy" who handles it for $1,200 flat.</p>
+                <p>Six months later, they learn <span class="damage">the contract granted the brand perpetual rights to her likeness in any derivative product</span>, including categories she would later be offered by a larger brand at 10x the price.</p>
+              </div>
+              <div class="problem-frames">
+                <div class="frame">
+                  <div class="accent-label" style="color:var(--gold);font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:900;">Structural issue 01</div>
+                  <h3>Conflict of interest baked in</h3>
+                  <p>Agents, collectives, and management firms are paid on deal volume or roster stability. None are paid to protect the household.</p>
+                </div>
+                <div class="frame">
+                  <div class="accent-label" style="color:var(--gold);font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:900;">Structural issue 02</div>
+                  <h3>Professional problems, hobbyist tools</h3>
+                  <p>Entity formation, 1099 tracking, multi-state tax, IP licensing. Real problems handled through group texts and Google Docs.</p>
+                </div>
+                <div class="frame">
+                  <div class="accent-label" style="color:var(--gold);font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:900;">Structural issue 03</div>
+                  <h3>No operating layer exists</h3>
+                  <p>Software sits on the brand or agent side. Education sits at the athlete level. Nothing organizes decisions at the household level.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 4. Market (footnote removed) -->
+          <article class="slide" data-title="Market" data-section="Market">
+            <div class="slide-inner">
+              <div>
+                <div class="badge">Market Overview</div>
+                <h2>Youth sports is already larger than the leagues families watch on TV.</h2>
+              </div>
+              <div class="market-static">
+                <div class="market-stat">
+                  <h3>Combined Professional Leagues</h3>
+                  <div class="market-bubble pro">
+                    <div>
+                      <strong>$48.9</strong>
+                      <span>Billion</span>
+                    </div>
+                  </div>
+                  <p>NFL, MLB, NBA, MLS, and WNBA combined.</p>
+                </div>
+                <div class="market-stat">
+                  <h3>Youth Sports Market</h3>
+                  <div class="market-bubble youth">
+                    <div>
+                      <strong>$52</strong>
+                      <span>Billion</span>
+                    </div>
+                  </div>
+                  <p>Household spend on youth sports in the United States.</p>
+                </div>
+              </div>
+              <div class="market-summary">
+                <p class="lead">The total market is large, but our buyer is a specific slice of it: the high-investment household already operating like an investor.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 5. Target Market (existing opportunity/funnel) -->
+          <article class="slide" data-title="Target Market" data-section="Market">
+            <div class="slide-inner">
+              <div>
+                <div class="badge">Target Market</div>
+                <h2>The opportunity is not all of youth sports. It is the families already investing like owners.</h2>
+              </div>
+              <div class="opportunity-stage">
+                <div class="market-frame" aria-label="Target market segmentation graphic">
+                  <div class="market-frame-inner">
+                    <div class="frame-header">
+                      <div>
+                        <strong>AthleteFO Target Market</strong>
+                        <div class="hint">Follow the money already flowing into athlete development</div>
+                      </div>
+                      <div class="badge">High-Investment Funnel</div>
+                    </div>
+                    <div class="market-funnel">
+                      <div class="funnel-band total">
+                        <h3>Total Youth Sports Market</h3>
+                        <strong>$52B</strong>
+                        <p>The full youth sports economy is massive, but not every household is our buyer.</p>
+                      </div>
+                      <div class="funnel-band investment">
+                        <h3>High-Investment Segment</h3>
+                        <strong>$5K to $20K+</strong>
+                        <p>Families already spending heavily on travel, coaching, camps, showcases, and exposure.</p>
+                      </div>
+                      <div class="funnel-band top25">
+                        <h3>Top 25% Families</h3>
+                        <strong>$12K+</strong>
+                        <p>Per child annual investment. This is the segment most likely to pay for structure, knowledge, and operating tools.</p>
+                      </div>
+                    </div>
+                    <div class="investment-meter">
+                      <div>
+                        <strong>5%</strong>
+                        <span>Spend roughly 5% of annual athlete investment on AthleteFO and gain the tools and intelligence to navigate the space like a business.</span>
+                      </div>
+                      <div class="meter-chip"><div><b>$600</b><small>on $12K</small></div></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="opportunity-copy">
+                  <div class="panel">
+                    <p class="lead">Families are already investing in athletes becoming businesses. AthleteFO helps them actually run that business.</p>
+                  </div>
+                  <div class="opportunity-points">
+                    <div class="opportunity-item"><strong>The gap:</strong> households spend aggressively on development but still manage decisions, contracts, taxes, brand opportunities, and risk without a front office.</div>
+                    <div class="opportunity-item"><strong>The buyer:</strong> the high-investment parent who has already accepted sports as a recurring capital allocation decision.</div>
+                    <div class="opportunity-item"><strong>The pitch:</strong> if a family spends $12K+ per child annually chasing upside, $600 for knowledge and tools is a rational extension of that investment.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 6. Solution -->
+          <article class="slide" data-title="Solution" data-section="Product">
+            <div class="slide-inner">
+              <div>
+                <div class="badge">The Solution</div>
+                <h2>AthleteFO is the front office platform for athlete families.</h2>
+              </div>
+              <div class="solution-stage">
+                <div class="dashboard-shell" aria-label="AthleteFO dashboard concept">
+                  <div class="dashboard-top">
+                    <div class="dashboard-brand">
+                      <div class="dashboard-dot"></div>
+                      <div>
+                        <strong style="display:block;color:var(--bone)">AthleteFO Command Center</strong>
+                        <span style="color:var(--muted);font-size:12px">FamilyGM dashboard (concept)</span>
+                      </div>
+                    </div>
+                    <div class="badge">Live Decision System</div>
+                  </div>
+                  <div class="dashboard-kpis">
+                    <div class="kpi"><strong>84</strong><span>Franchise Score</span></div>
+                    <div class="kpi"><strong>3</strong><span>Active deals under review</span></div>
+                    <div class="kpi"><strong>11</strong><span>Critical docs secured in Vault</span></div>
+                  </div>
+                  <div class="dashboard-grid">
+                    <div class="dash-panel">
+                      <h3>Opportunity Pipeline</h3>
+                      <div class="deal-chart">
+                        <span style="height:36%"></span>
+                        <span style="height:52%"></span>
+                        <span style="height:68%"></span>
+                        <span style="height:48%"></span>
+                        <span style="height:82%"></span>
+                        <span style="height:74%"></span>
+                        <span style="height:58%"></span>
+                        <span style="height:90%"></span>
+                      </div>
+                    </div>
+                    <div class="dash-panel">
+                      <h3>Scouting Reports</h3>
+                      <div class="dash-list">
+                        <div class="dash-row"><span>Regional apparel partnership</span><span class="pill gold">Review</span></div>
+                        <div class="dash-row"><span>Camp licensing inquiry</span><span class="pill green">Strong Fit</span></div>
+                        <div class="dash-row"><span>Collective promo request</span><span class="pill pink">Risk Flag</span></div>
+                      </div>
+                    </div>
+                    <div class="dash-panel">
+                      <h3>Family Office View</h3>
+                      <div class="dash-list">
+                        <div class="dash-row"><span>Entity setup complete</span><span class="pill green">Done</span></div>
+                        <div class="dash-row"><span>1099 tracker</span><span class="pill gold">In Progress</span></div>
+                        <div class="dash-row"><span>Advisor roster synced</span><span class="pill green">Live</span></div>
+                      </div>
+                    </div>
+                    <div class="dash-panel">
+                      <h3>Risk Heatmap</h3>
+                      <div class="heatmap">
+                        <span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="solution-copy">
+                  <p class="lead">AthleteFO helps high-investment households organize, evaluate, and manage the business side of sports through one coordinated system.</p>
+                  <div class="solution-points">
+                    <div class="solution-point">We give families the tools, structure, and strategic framework to operate the athlete as what they are becoming: <span class="accent">a Personal Sports Franchise.</span></div>
+                    <div class="solution-point">Deal review, documents, advisors, scorecards, and risk management move out of scattered text threads and into one front-office workflow.</div>
+                    <div class="solution-point">AthleteFO transforms the family from an overwhelmed support system into an organized front office.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 7. Business Model -->
+          <article class="slide" data-title="Business Model" data-section="Revenue">
+            <div class="slide-inner">
+              <div>
+                <div class="badge">Business Model</div>
+                <h2>Media-led acquisition. Recurring infrastructure. Premium expansion.</h2>
+              </div>
+              <div class="business-slide">
+                <div class="business-flow">
+                  <div class="flow-card">
+                    <h3>Attention engine</h3>
+                    <strong>OYF Media</strong>
+                    <p>Content, deal breakdowns, cultural authority.</p>
+                    <div class="flow-arrow">→</div>
+                  </div>
+                  <div class="flow-card">
+                    <h3>Entry layer</h3>
+                    <strong>The Locker Room</strong>
+                    <p>Free and low-cost community, education, trust-building.</p>
+                    <div class="flow-arrow">→</div>
+                  </div>
+                  <div class="flow-card">
+                    <h3>Core revenue engine</h3>
+                    <strong>AthleteFO Subscription</strong>
+                    <p>Recurring front-office infrastructure for the athlete household.</p>
+                    <div class="flow-arrow">→</div>
+                  </div>
+                  <div class="flow-card">
+                    <h3>ARPU expansion</h3>
+                    <strong>Premium Front Office Services</strong>
+                    <p>Deal review, oversight, templates, strategic support, concierge resources.</p>
+                  </div>
+                </div>
+                <div class="business-table">
+                  <div class="table-row header">
+                    <div class="cell">Layer</div>
+                    <div class="cell">Product</div>
+                    <div class="cell">What They Get</div>
+                    <div class="cell">Buyer</div>
+                    <div class="cell">Pricing</div>
+                    <div class="cell">Revenue Type</div>
+                  </div>
+                  <div class="table-row">
+                    <div class="cell">1</div>
+                    <div class="cell">OYF / Locker Room</div>
+                    <div class="cell">Education, community, brand trust, early operating habits</div>
+                    <div class="cell">Athletes + families</div>
+                    <div class="cell">Free / low-cost entry</div>
+                    <div class="cell">Lead gen / low-ticket</div>
+                  </div>
+                  <div class="table-row">
+                    <div class="cell">2</div>
+                    <div class="cell">AthleteFO</div>
+                    <div class="cell">Front-office tools, workflows, organization, scorecards, operating infrastructure</div>
+                    <div class="cell">High-investment families</div>
+                    <div class="cell">Monthly / annual subscription</div>
+                    <div class="cell">Recurring revenue</div>
+                  </div>
+                  <div class="table-row">
+                    <div class="cell">3</div>
+                    <div class="cell">Premium Services</div>
+                    <div class="cell">Higher-touch review, oversight, templates, guidance, specialized support</div>
+                    <div class="cell">Complex or high-activity households</div>
+                    <div class="cell">Premium pricing</div>
+                    <div class="cell">Service expansion</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 8. Revenue Model (revised calculator) -->
+          <article class="slide" data-title="Revenue Model" data-section="Revenue">
+            <div class="slide-inner">
+              <div>
+                <div class="badge">Revenue Model</div>
+                <h2>Bottoms-up, not top-down. Move the acquisition dials, watch the model respond.</h2>
+              </div>
+              <div class="calc">
+                <div class="panel">
+                  <div class="calc-assumptions">
+                    <h4>Monthly acquisition inputs</h4>
+                  </div>
+                  <div class="slider-row">
+                    <label for="monthlyAdds">Net new households per month <span class="number-output" id="monthlyAddsOut">120</span></label>
+                    <input id="monthlyAdds" type="range" min="25" max="750" step="5" value="120">
+                  </div>
+                  <div class="slider-row">
+                    <label for="arpu">Monthly ARPU <span class="number-output" id="arpuOut">$59</span></label>
+                    <input id="arpu" type="range" min="25" max="150" step="1" value="59">
+                  </div>
+                  <div class="slider-row">
+                    <label for="cac">Blended CAC <span class="number-output" id="cacOut">$220</span></label>
+                    <input id="cac" type="range" min="80" max="600" step="10" value="220">
+                  </div>
+                  <div class="slider-row">
+                    <label for="churn">Annual logo churn <span class="number-output" id="churnOut">14%</span></label>
+                    <input id="churn" type="range" min="4" max="35" step="1" value="14">
+                  </div>
+                </div>
+                <div class="panel">
+                  <div class="calc-year-grid">
+                    <div class="calc-year-tile">
+                      <span class="ytag">Month 12 ARR</span>
+                      <strong id="arr12">$0</strong>
+                      <span id="hh12">0 households</span>
+                    </div>
+                    <div class="calc-year-tile">
+                      <span class="ytag">Month 24 ARR</span>
+                      <strong id="arr24">$0</strong>
+                      <span id="hh24">0 households</span>
+                    </div>
+                    <div class="calc-year-tile">
+                      <span class="ytag">Month 36 ARR</span>
+                      <strong id="arr36">$0</strong>
+                      <span id="hh36">0 households</span>
+                    </div>
+                  </div>
+                  <div class="unit-econ">
+                    <div class="econ-tile"><strong id="ltv">$0</strong><span>LTV (assuming 40% gross margin)</span></div>
+                    <div class="econ-tile"><strong id="ltvcac">0x</strong><span>LTV / CAC</span></div>
+                    <div class="econ-tile"><strong id="payback">0 mo</strong><span>CAC payback</span></div>
+                    <div class="econ-tile"><strong id="burnPerHH">$0</strong><span>Acquisition $ per household / year</span></div>
+                  </div>
+                </div>
+              </div>
+              <p class="body" style="font-size:13px;color:var(--graphite);">Defaults reflect early-stage targets. Update with real channel data as it lands. Assumes straight-line monthly net adds and constant ARPU; production model will layer in cohort decay and seasonal acquisition.</p>
+            </div>
+          </article>
+
+          <!-- 9. Go to Market (revised) -->
+          <article class="slide" data-title="Go to Market" data-section="Growth">
+            <div class="slide-inner">
+              <div>
+                <div class="badge">Go to Market</div>
+                <h2>Four channels, one funnel, measured at every step.</h2>
+              </div>
+              <div class="channel-grid">
+                <div class="channel-card">
+                  <span class="stage-tag">Stage 01 / Attention</span>
+                  <strong>OYF content engine</strong>
+                  <span class="metric-line">Target: 2M monthly impressions by M12</span>
+                  <p>Short-form breakdowns of real NIL deals, contract traps, and household operating moves. TikTok, IG Reels, YouTube Shorts. Measured on follower growth and email capture CPL.</p>
+                </div>
+                <div class="channel-card">
+                  <span class="stage-tag">Stage 02 / Trust</span>
+                  <strong>The Locker Room</strong>
+                  <span class="metric-line">Target: 15% email-to-member conversion</span>
+                  <p>Free and low-tier community layer. Weekly huddles, resource library, early product access. The seasoning step before the household is ready to subscribe.</p>
+                </div>
+                <div class="channel-card">
+                  <span class="stage-tag">Stage 03 / Convert</span>
+                  <strong>Franchise Sprint onboarding</strong>
+                  <span class="metric-line">Target: 8% member-to-paid conversion</span>
+                  <p>Paid 30-day onboarding offer. Families get set up, organized, and operating. Acts as both a revenue event and a commitment device into the recurring subscription.</p>
+                </div>
+                <div class="channel-card">
+                  <span class="stage-tag">Stage 04 / Retain</span>
+                  <strong>AthleteFO subscription</strong>
+                  <span class="metric-line">Target: &lt;15% annual logo churn</span>
+                  <p>Ongoing deal reviews, scorecards, Vault, advisor sync, community. Recurring reason to log in, recurring reason to stay.</p>
+                </div>
+              </div>
+              <div class="unit-econ">
+                <div class="econ-tile"><strong>$220</strong><span>Target blended CAC</span></div>
+                <div class="econ-tile"><strong>4.0x</strong><span>Target LTV / CAC</span></div>
+                <div class="econ-tile"><strong>12 mo</strong><span>Target CAC payback</span></div>
+                <div class="econ-tile"><strong>25%</strong><span>Content to email target</span></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 10. Why We Win (merged Why We Win + Secret Sauce) -->
+          <article class="slide" data-title="Why We Win" data-section="Defensibility">
+            <div class="slide-inner">
+              <div>
+                <div class="badge">Why We Win</div>
+                <h2>Culture, trust, and infrastructure in one stack. Nobody else is building all three.</h2>
+              </div>
+              <div class="three-col">
+                <div class="card">
+                  <h3>Cultural Resonance</h3>
+                  <p>A media brand athletes want to repost, wear, and identify with. Earns attention without spending on it.</p>
+                </div>
+                <div class="card">
+                  <h3>Parent Trust</h3>
+                  <p>Lawyer-led credibility for households and partners who need structure, safety, and real intelligence.</p>
+                </div>
+                <div class="card">
+                  <h3>Platform Logic</h3>
+                  <p>A recurring platform model with a premium sports-business worldview instead of episodic services.</p>
+                </div>
+              </div>
+              <div class="two-col">
+                <div class="list-panel">
+                  <h3>The integrated advantage</h3>
+                  <div class="bullet-stack">
+                    <div class="bullet-row">Identity, education, and infrastructure in one recurring product</div>
+                    <div class="bullet-row">Content acquires at a fraction of paid CAC, lawyer-led depth anchors trust</div>
+                    <div class="bullet-row">Wedge into the highest-value segment, not the broadest one</div>
+                    <div class="bullet-row">Every new household adds data that sharpens deal review and scorecards</div>
+                  </div>
+                </div>
+                <div class="list-panel">
+                  <h3>Two audiences, one system</h3>
+                  <div class="bullet-stack">
+                    <div class="bullet-row"><strong>Athletes</strong> want status, identity, and belonging</div>
+                    <div class="bullet-row"><strong>Parents</strong> want structure, safety, and intelligence</div>
+                    <div class="bullet-row"><strong>AthleteFO</strong> is the only layer built to satisfy both at once</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 11. Competition -->
+          <article class="slide" data-title="Competition" data-section="Defensibility">
+            <div class="slide-inner">
+              <div>
+                <div class="badge">Competition</div>
+                <h2>The market is crowded with point solutions. Nobody is building the household operating layer.</h2>
+              </div>
+              <div class="compete-table">
+                <div class="compete-row head">
+                  <div class="compete-cell">Capability</div>
+                  <div class="compete-cell">Agents &amp; mgmt firms</div>
+                  <div class="compete-cell">NIL collectives</div>
+                  <div class="compete-cell">Software (Opendorse, INFLCR)</div>
+                  <div class="compete-cell us">AthleteFO</div>
+                </div>
+                <div class="compete-row">
+                  <div class="compete-cell">Household-first advocacy</div>
+                  <div class="compete-cell"><span class="mark-no">✗ Commission-driven</span></div>
+                  <div class="compete-cell"><span class="mark-no">✗ Roster-driven</span></div>
+                  <div class="compete-cell"><span class="mark-no">✗ Brand / school side</span></div>
+                  <div class="compete-cell us"><span class="mark-yes">✓ Built for the family</span></div>
+                </div>
+                <div class="compete-row">
+                  <div class="compete-cell">Deal review &amp; legal structure</div>
+                  <div class="compete-cell"><span class="mark-partial">~ Case by case</span></div>
+                  <div class="compete-cell"><span class="mark-no">✗</span></div>
+                  <div class="compete-cell"><span class="mark-no">✗</span></div>
+                  <div class="compete-cell us"><span class="mark-yes">✓ Core workflow</span></div>
+                </div>
+                <div class="compete-row">
+                  <div class="compete-cell">Recurring operating tools</div>
+                  <div class="compete-cell"><span class="mark-no">✗</span></div>
+                  <div class="compete-cell"><span class="mark-no">✗</span></div>
+                  <div class="compete-cell"><span class="mark-partial">~ Athlete-level only</span></div>
+                  <div class="compete-cell us"><span class="mark-yes">✓ Family-level system</span></div>
+                </div>
+                <div class="compete-row">
+                  <div class="compete-cell">Cultural / media authority</div>
+                  <div class="compete-cell"><span class="mark-no">✗</span></div>
+                  <div class="compete-cell"><span class="mark-partial">~ Local</span></div>
+                  <div class="compete-cell"><span class="mark-no">✗</span></div>
+                  <div class="compete-cell us"><span class="mark-yes">✓ OYF brand</span></div>
+                </div>
+                <div class="compete-row">
+                  <div class="compete-cell">Pricing accessible to households</div>
+                  <div class="compete-cell"><span class="mark-no">✗ Commission %</span></div>
+                  <div class="compete-cell"><span class="mark-partial">~ Opaque</span></div>
+                  <div class="compete-cell"><span class="mark-no">✗ Enterprise</span></div>
+                  <div class="compete-cell us"><span class="mark-yes">✓ $50–$100/mo</span></div>
+                </div>
+              </div>
+              <p class="lead">The adjacent players sell to brands, schools, and agents. Our buyer (the high-investment household) is a category nobody is currently serving with an integrated product.</p>
+            </div>
+          </article>
+
+          <!-- 12. Traction & Roadmap -->
+          <article class="slide" data-title="Traction &amp; Roadmap" data-section="Traction">
+            <div class="slide-inner">
+              <div>
+                <div class="badge">Traction &amp; Roadmap</div>
+                <h2>Where we are, where we're going in the next 18 months.</h2>
+              </div>
+              <div class="milestone-grid">
+                <div class="milestone done">
+                  <span class="mstatus done-tag">Done</span>
+                  <strong>Brand &amp; content foundation</strong>
+                  <p>OYF brand architecture, editorial voice, Executive Platinum identity system.</p>
+                  <span class="placeholder-tag">placeholder: add audience size, publishing cadence</span>
+                </div>
+                <div class="milestone done">
+                  <span class="mstatus done-tag">Done</span>
+                  <strong>Platform &amp; product thesis</strong>
+                  <p>Household operating model, Franchise Score framework, product surface mapped.</p>
+                  <span class="placeholder-tag">placeholder: add design partners to date</span>
+                </div>
+                <div class="milestone now">
+                  <span class="mstatus now-tag">Now</span>
+                  <strong>MVP &amp; first paying cohort</strong>
+                  <p>Core dashboard, Vault, deal review workflow. Target: 100 paying households in first 6 months.</p>
+                  <span class="placeholder-tag">placeholder: add current household count, ARR</span>
+                </div>
+                <div class="milestone">
+                  <span class="mstatus next-tag">Next 12 mo</span>
+                  <strong>Scale content + 1,000 households</strong>
+                  <p>Open Locker Room community tier, launch Franchise Sprint onboarding, cross $700K ARR.</p>
+                  <span class="placeholder-tag">placeholder: add hiring plan, channel budget</span>
+                </div>
+              </div>
+              <div class="metric-grid">
+                <div class="metric"><strong>__</strong><span>Locker Room members (fill in)</span></div>
+                <div class="metric"><strong>__</strong><span>Paying households (fill in)</span></div>
+                <div class="metric"><strong>$__</strong><span>Current MRR (fill in)</span></div>
+              </div>
+              <p class="body" style="font-size:13px;color:var(--graphite);">The numbers on this slide are placeholders. Replace them with real current figures before sending to anyone outside the founding group.</p>
+            </div>
+          </article>
+
+          <!-- 13. Team -->
+          <article class="slide" data-title="Team" data-section="Team">
+            <div class="slide-inner">
+              <div>
+                <div class="badge">Team</div>
+                <h2>Operators who have lived the problem on every side of the table.</h2>
+              </div>
+              <div class="team-grid">
+                <div class="team-card">
+                  <div class="avatar">FN</div>
+                  <strong>Founder Name</strong>
+                  <span class="role">Founder / CEO</span>
+                  <p>One-line credibility: prior company, relevant role, named outcome.</p>
+                  <span class="placeholder-tag">placeholder: replace with real founder bio</span>
+                </div>
+                <div class="team-card">
+                  <div class="avatar">CF</div>
+                  <strong>Co-founder Name</strong>
+                  <span class="role">Co-founder / Product or Legal</span>
+                  <p>Complementary skillset: legal depth, product leadership, or operator background.</p>
+                  <span class="placeholder-tag">placeholder: replace with real co-founder bio</span>
+                </div>
+                <div class="team-card">
+                  <div class="avatar">+</div>
+                  <strong>Key advisor or early hire</strong>
+                  <span class="role">Advisor / Early team</span>
+                  <p>Sports industry, athlete representation, or household finance credential.</p>
+                  <span class="placeholder-tag">placeholder: replace with real advisor</span>
+                </div>
+              </div>
+              <div class="two-col">
+                <div class="list-panel">
+                  <h3>What this team uniquely brings</h3>
+                  <div class="bullet-stack">
+                    <div class="bullet-row">Lawyer-led rigor on deal structure and family office workflows</div>
+                    <div class="bullet-row">Media instincts for building cultural authority in youth and college sports</div>
+                    <div class="bullet-row">Product experience shipping recurring, workflow-based software</div>
+                    <div class="bullet-row">Direct, lived exposure to the high-investment household experience</div>
+                  </div>
+                </div>
+                <div class="list-panel">
+                  <h3>Hiring priorities (next 12 mo)</h3>
+                  <div class="bullet-stack">
+                    <div class="bullet-row">Head of Content / Locker Room</div>
+                    <div class="bullet-row">Founding full-stack engineer</div>
+                    <div class="bullet-row">First designer (brand + product)</div>
+                    <div class="bullet-row">Advisor bench: agent ecosystem, NIL policy, tax counsel</div>
+                  </div>
+                </div>
+              </div>
+              <p class="body" style="font-size:13px;color:var(--graphite);">Avatars and bios are placeholders. Replace with real founders, real one-liners, and headshots before sharing externally.</p>
+            </div>
+          </article>
+
+          <!-- 14. Vision (merged Vision + Building Toward) -->
+          <article class="slide" data-title="Vision" data-section="Vision">
+            <div class="slide-inner">
+              <div>
+                <div class="badge">Vision</div>
+                <h2>A new category: front-office infrastructure for sports families.</h2>
+              </div>
+              <p class="lead">The future is not more athlete services. It is organized athlete enterprises. AthleteFO is positioned to define the category and own the recurring relationship inside it.</p>
+              <div class="build-grid">
+                <div class="build-card"><strong>System of Record</strong><p>The durable home for athlete household data, documents, decisions, and relationships.</p></div>
+                <div class="build-card"><strong>Decision Environment</strong><p>The place where families evaluate opportunities with structure instead of guesswork.</p></div>
+                <div class="build-card"><strong>Front Office Framework</strong><p>The workflow layer that turns scattered sports ambition into organized enterprise behavior.</p></div>
+                <div class="build-card"><strong>Trusted Recurring Relationship</strong><p>The operating layer behind athlete value creation across the full sports lifecycle.</p></div>
+              </div>
+              <div class="vision-ladder">
+                <div class="vision-step"><strong>Start here</strong>Serve the high-investment youth and amateur segment.</div>
+                <div class="vision-step"><strong>Scale outward</strong>Grow into the broader athlete enterprise management layer.</div>
+                <div class="vision-step"><strong>Become the system</strong>System of record, decision environment, and front-office framework for the household.</div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 15. Ask -->
+          <article class="slide" data-title="The Ask" data-section="Ask">
+            <div class="slide-inner">
+              <div>
+                <div class="badge">The Ask</div>
+                <h2>Here is where we need advisors and early partners to plug in.</h2>
+              </div>
+              <div class="ask-grid">
+                <div class="ask-card">
+                  <span class="ask-num">01</span>
+                  <strong>Warm intros</strong>
+                  <p>Agent ecosystem, college athletic departments, NIL collective operators, and top travel organization directors. Also: tax and entity-formation counsel who work with athletes.</p>
+                </div>
+                <div class="ask-card">
+                  <span class="ask-num">02</span>
+                  <strong>Design partners</strong>
+                  <p>5 to 10 high-investment families willing to pilot AthleteFO over a full season and give blunt feedback on dashboard, Vault, and deal review flows.</p>
+                </div>
+                <div class="ask-card">
+                  <span class="ask-num">03</span>
+                  <strong>Feedback and stress-tests</strong>
+                  <p>Pressure on pricing, CAC assumptions, and competitive positioning. We want the harshest version of those conversations now, not after we have burned money on them.</p>
+                </div>
+              </div>
+              <div class="two-col">
+                <div class="panel">
+                  <h3 style="color:var(--cream);margin-bottom:12px;">What we are committing to in return</h3>
+                  <p class="body">Monthly async updates with real numbers (households, MRR, churn, CAC). Direct access to the founders. A seat in early product decisions for anyone who is materially involved.</p>
+                </div>
+                <div class="panel">
+                  <h3 style="color:var(--cream);margin-bottom:12px;">The pitch, one more time</h3>
+                  <p class="tagline" style="margin-top:6px;font-size:clamp(18px,2vw,28px);">Wear the brand. Own the business. Build the legacy.</p>
+                  <p class="body" style="margin-top:14px;">Stop Renting Your Name. Own Your Franchise.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+        <footer class="footer">
+          <span id="slideCounter">Slide 1 of 15</span>
+          <span>AthleteFO · Executive Platinum · v2</span>
+        </footer>
+      </section>
+    </main>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const slideList = document.getElementById("slideList");
+      const progressBar = document.getElementById("progressBar");
+      const slideCounter = document.getElementById("slideCounter");
+      const sectionLabel = document.getElementById("sectionLabel");
+      const sidebar = document.getElementById("sidebar");
+      let index = 0;
+
+      slides.forEach((slide, i) => {
+        const button = document.createElement("button");
+        button.className = "slide-tab";
+        button.type = "button";
+        button.innerHTML = `<b>${String(i + 1).padStart(2, "0")}</b><span>${slide.dataset.title}</span>`;
+        button.addEventListener("click", () => goTo(i));
+        slideList.appendChild(button);
+      });
+
+      const tabs = Array.from(document.querySelectorAll(".slide-tab"));
+
+      function goTo(next) {
+        index = Math.max(0, Math.min(slides.length - 1, next));
+        slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
+        tabs.forEach((tab, i) => tab.classList.toggle("active", i === index));
+        progressBar.style.width = `${((index + 1) / slides.length) * 100}%`;
+        slideCounter.textContent = `Slide ${index + 1} of ${slides.length}`;
+        sectionLabel.textContent = slides[index].dataset.section;
+        sidebar.classList.remove("open");
+      }
+
+      document.getElementById("prevBtn").addEventListener("click", () => goTo(index - 1));
+      document.getElementById("nextBtn").addEventListener("click", () => goTo(index + 1));
+      document.getElementById("menuBtn").addEventListener("click", () => sidebar.classList.toggle("open"));
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight" || event.key === "PageDown") goTo(index + 1);
+        if (event.key === "ArrowLeft" || event.key === "PageUp") goTo(index - 1);
+        if (event.key === "Home") goTo(0);
+        if (event.key === "End") goTo(slides.length - 1);
+        if (event.key === "Escape") sidebar.classList.remove("open");
+      });
+
+      // --- Present mode toggle ---
+      const app = document.querySelector(".app");
+      const presentBtn = document.getElementById("presentBtn");
+      if (presentBtn) {
+        presentBtn.addEventListener("click", () => {
+          const on = app.classList.toggle("present");
+          presentBtn.setAttribute("aria-pressed", on ? "true" : "false");
+          presentBtn.textContent = on ? "Exit" : "Present";
+        });
+      }
+
+      // --- Bottoms-up revenue model ---
+      const monthlyAdds = document.getElementById("monthlyAdds");
+      const arpu = document.getElementById("arpu");
+      const cac = document.getElementById("cac");
+      const churn = document.getElementById("churn");
+
+      function money(value) {
+        if (value >= 1000000) return `$${(value / 1000000).toFixed(2)}M`;
+        if (value >= 1000) return `$${(value / 1000).toFixed(0)}K`;
+        return `$${Math.round(value).toLocaleString()}`;
+      }
+
+      // Simulate monthly adds + monthly churn for N months, return {households, arr}
+      function simulate(months, addsPerMonth, monthlyChurnRate, monthlyArpu) {
+        let hh = 0;
+        for (let i = 0; i < months; i++) {
+          hh = hh * (1 - monthlyChurnRate) + addsPerMonth;
+        }
+        return {
+          households: Math.round(hh),
+          arr: Math.round(hh * monthlyArpu * 12)
+        };
+      }
+
+      function updateRevenue() {
+        const adds = Number(monthlyAdds.value);
+        const price = Number(arpu.value);
+        const cacVal = Number(cac.value);
+        const churnPct = Number(churn.value);
+        const monthlyChurn = 1 - Math.pow(1 - churnPct / 100, 1 / 12);
+
+        document.getElementById("monthlyAddsOut").textContent = adds.toLocaleString();
+        document.getElementById("arpuOut").textContent = `$${price}`;
+        document.getElementById("cacOut").textContent = `$${cacVal}`;
+        document.getElementById("churnOut").textContent = `${churnPct}%`;
+
+        const y1 = simulate(12, adds, monthlyChurn, price);
+        const y2 = simulate(24, adds, monthlyChurn, price);
+        const y3 = simulate(36, adds, monthlyChurn, price);
+
+        document.getElementById("arr12").textContent = money(y1.arr);
+        document.getElementById("hh12").textContent = `${y1.households.toLocaleString()} households`;
+        document.getElementById("arr24").textContent = money(y2.arr);
+        document.getElementById("hh24").textContent = `${y2.households.toLocaleString()} households`;
+        document.getElementById("arr36").textContent = money(y3.arr);
+        document.getElementById("hh36").textContent = `${y3.households.toLocaleString()} households`;
+
+        // Unit economics. LTV assumes 40% gross margin and annual churn -> avg lifetime in months.
+        const annualChurn = churnPct / 100;
+        const lifetimeMonths = annualChurn > 0 ? 1 / (annualChurn / 12) : 60;
+        const ltv = price * lifetimeMonths * 0.4;
+        const ratio = cacVal > 0 ? ltv / cacVal : 0;
+        const grossPerMonth = price * 0.4;
+        const payback = grossPerMonth > 0 ? cacVal / grossPerMonth : 0;
+        const burnPerHH = adds > 0 ? cacVal * adds * 12 / Math.max(1, y1.households) : 0;
+
+        document.getElementById("ltv").textContent = money(ltv);
+        document.getElementById("ltvcac").textContent = `${ratio.toFixed(1)}x`;
+        document.getElementById("payback").textContent = `${Math.round(payback)} mo`;
+        document.getElementById("burnPerHH").textContent = money(burnPerHH);
+      }
+
+      [monthlyAdds, arpu, cac, churn].forEach((input) => input.addEventListener("input", updateRevenue));
+      updateRevenue();
+      goTo(0);
+    </script>
+  </body>
+</html>
